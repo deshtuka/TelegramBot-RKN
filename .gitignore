@@ -1,0 +1,18 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Базовые папки
+/.idea
+/__pycache__
+/venv
+# Конфигурационные файлы
+/captcha_img
+/config/secret_keys.env
+/database
+/log
+/report
+# Тестовые данные
+/*test*
