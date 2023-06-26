@@ -3,11 +3,14 @@
 Модуль функций проверок для обработчиков
 """
 from bot import bot, BotDatabase
+from config.public_keys import SQL_DATETIME_FORMAT
+
+import datetime
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-def check_user_exists_in_database(chat_id):
+def check_user_exists_in_database(chat_id: id):
     """Проверка наличия пользователя в базе данных
 
     Args:
@@ -24,3 +27,26 @@ def check_user_exists_in_database(chat_id):
         bot.send_message(chat_id=chat_id, text=bot.msg.SELECT_ACTION, reply_markup=keyboard)
     else:
         bot.send_message(chat_id=chat_id, text=bot.msg.INFO_SETTING)
+
+
+def is_cookie_active_less_than_25_min(chat_id: int) -> bool:
+    """Проверка сохраненных данных сессии по активности.
+    Если у пользователя была успешная активность в течение 25 минут, авторизация на сайте не нужна
+
+    Args:
+        chat_id: идентификатор чата пользователя с ботом
+    Returns:
+        bool: True - менее 25 мин / False - более 25 мин
+    """
+    datetime_string = BotDatabase.get_last_action(chat_id=chat_id)
+
+    if datetime_string is None:
+        return False
+
+    dt_bd = datetime.datetime.strptime(datetime_string, SQL_DATETIME_FORMAT)
+
+    dt_now = datetime.datetime.now()
+    diff = dt_now - dt_bd
+
+    total_minutes = diff.total_seconds() / 60
+    return total_minutes <= 25

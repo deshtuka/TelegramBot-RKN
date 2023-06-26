@@ -91,6 +91,7 @@ def scraping_page_my_reports(response) -> Union[dict, str]:
     result_dict = dict()
     xpath_table_row = public_keys.XPATH_TABLE_ROW
 
+    # [<Response [302]>] - history[0].status_code
     if response.status_code == 200:
         tree_content = html.fromstring(response.content)
 

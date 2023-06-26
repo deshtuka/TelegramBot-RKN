@@ -30,6 +30,9 @@ DIRECTORY_DEBUG = 'log'
 DIRECTORY_DATABASE = 'database'
 DIRECTORY_CONFIG = 'config'
 
+# Константы
+SQL_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
 # Конфигурационные файлы
 FILE_DEBUG = f'{DIRECTORY_DEBUG}/debug.log'
 FILE_ENV = f'{DIRECTORY_CONFIG}/secret_keys.env'

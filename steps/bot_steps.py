@@ -4,9 +4,10 @@
 """
 
 from request_api.request_api import ApiRequests
+from steps import bot_asserts
 from utils import functions, file, folders, logger
 from utils.crypto import Cryptography
-from config.public_keys import URL_REPORTS, URL_CAPTCHA, DIRECTORY_CAPTCHA, URL_DOWNLOAD_REPORT, DIRECTORY_ARCHIVE_TEMP
+from config.public_keys import URL_CAPTCHA, DIRECTORY_CAPTCHA, URL_DOWNLOAD_REPORT, DIRECTORY_ARCHIVE_TEMP
 from bot import BotDatabase
 from config.bot_message import Message
 
@@ -27,18 +28,13 @@ def is_check_cookie(chat_id: int) -> tuple:
         user_agent: агент из файла
         secret_code_id: секрет код
     """
-    # Получение данных из БД
-    cookies = BotDatabase.get_cookies(chat_id=chat_id)
-    user_agent = BotDatabase.get_user_agent(chat_id=chat_id)
-    secret_code_id = BotDatabase.get_secret_code_id(chat_id=chat_id)
-
     status, level, msg = False, 'WARNING', Message.COOKIES_BAD
 
-    # Если пришли куки и user-agent из файла - делается запрос с параметрами на проверку URL
-    if user_agent is not None and cookies is not None:
-        response = request.get_page_report(headers=user_agent, cookies=cookies)
+    # Получение данных из БД
+    user_agent, secret_code_id, cookies = BotDatabase.get_session(chat_id=chat_id)
 
-        if response.request.url == URL_REPORTS:
+    if bot_asserts.is_cookie_active_less_than_25_min(chat_id=chat_id):
+        if user_agent is not None and cookies is not None:
             status, level, msg = True, 'SUCCESS', Message.COOKIES_GOOD
 
     logger.logger.log(level, msg)
@@ -106,9 +102,7 @@ def authorization(secret_code_status: int, chat_id: int) -> Tuple[bool, str]:
     if not login or not password_encoded:
         return False, Message.INFO_SETTING
 
-    cookies = BotDatabase.get_cookies(chat_id=chat_id)
-    user_agent = BotDatabase.get_user_agent(chat_id=chat_id)
-    secret_code_id = BotDatabase.get_secret_code_id(chat_id=chat_id)
+    user_agent, secret_code_id, cookies = BotDatabase.get_session(chat_id=chat_id)
 
     # Запрос авторизации
     response = request.post_authorization(login=login,
@@ -120,6 +114,10 @@ def authorization(secret_code_status: int, chat_id: int) -> Tuple[bool, str]:
 
     # Проверка ошибок учетной записи
     is_auth, msg_auth = functions.scraping_page_auth(response)
+
+    if is_auth:
+        BotDatabase.add_last_action(chat_id=chat_id)
+
     return is_auth, msg_auth
 
 
@@ -129,14 +127,15 @@ def page_report(chat_id: int) -> Union[dict, str]:
     Returns:
          Словарь спарсенных данных отчетов для вывода в кнопки
     """
-    is_cookie, cookies, user_agent, _ = is_check_cookie(chat_id=chat_id)
-    if is_cookie:
-        response = request.get_page_report(headers=user_agent, cookies=cookies)
+    user_agent, _, cookies = BotDatabase.get_session(chat_id=chat_id)
 
-        # Парсинг
-        return functions.scraping_page_my_reports(response)
-    else:
-        return Message.ERROR_AUTH
+    response = request.get_page_report(headers=user_agent, cookies=cookies)
+
+    # Парсинг
+    result = functions.scraping_page_my_reports(response)
+    if isinstance(result, dict) and len(result) > 0:
+        BotDatabase.add_last_action(chat_id=chat_id)
+    return result
 
 
 def create_report_for_date(chat_id: int, date: str) -> bool:
@@ -153,9 +152,10 @@ def create_report_for_date(chat_id: int, date: str) -> bool:
 
     if is_cookie:
         response = request.post_create_report(date=date, headers=user_agent, cookies=cookies)
-        return True if response.status_code == 200 else False
-    else:
-        return False
+        if response.status_code == 200:
+            BotDatabase.add_last_action(chat_id=chat_id)
+            return True
+    return False
 
 
 def download_the_selected_report(chat_id: int, archive_id: str):
@@ -188,6 +188,7 @@ def download_the_selected_report(chat_id: int, archive_id: str):
             path_to_files, message_from_csv = functions.unpacking_archive(archive_id=archive_id,
                                                                           path_archive=path_archive)
 
+            BotDatabase.add_last_action(chat_id=chat_id)
             return True, message_from_csv, path_to_files
         else:
             return False, Message.ERROR_DOWNLOAD, ''

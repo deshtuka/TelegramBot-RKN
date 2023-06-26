@@ -23,6 +23,7 @@ def settings_command(message):
 
     # Добавление информации о пользователе в БД для логирования его действий
     BotDatabase.add_personal_data(chat_id=chat_id, firstname=firstname, lastname=lastname, link=username)
+    BotDatabase.add_date_settings(chat_id=chat_id)
 
     # Вывод кнопок
     keyboard = InlineKeyboardMarkup()

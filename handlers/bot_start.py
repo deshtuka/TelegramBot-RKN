@@ -21,7 +21,9 @@ def start_command(message):
 @bot.message_handler(commands='lol')
 def lol_command(message):
     chat_id = message.chat.id
-    bot.send_message(chat_id, bot.msg.ERROR.format(msg='Касяк'))
+
+    res = bot_asserts.is_cookie_active_less_than_25_min(chat_id=chat_id)
+    bot.send_message(chat_id, f'Результат = {res}')
 
 
 # Обработчик капчи. Ввод пользователем 2-4 цифр с картинки
@@ -100,7 +102,7 @@ def get_report(callback_query):
         # GET-запрос на получение страницы Отчетов
         response_result = bot_steps.page_report(chat_id=chat_id)
 
-        if isinstance(response_result, dict):
+        if isinstance(response_result, dict) and len(response_result) > 0:
             # Вывод в чат кнопок с отчетами
             inline_response = InlineKeyboardMarkup(row_width=1)
             list_buttons = list()
@@ -109,10 +111,9 @@ def get_report(callback_query):
             inline_response.add(*list_buttons)
 
             bot.send_message(chat_id=chat_id, text=bot.msg.REPORT_STATUS, reply_markup=inline_response)
-        else:
-            bot.send_message(chat_id=chat_id, text=response_result)
-    else:
-        bot_steps.bot_get_captcha(bot, chat_id=chat_id)
+            return None
+        bot.send_message(chat_id=chat_id, text=bot.msg.ERROR_AUTH)
+    bot_steps.bot_get_captcha(bot, chat_id=chat_id)
 
 
 # Обработчик. Скачивание выбранного отчета

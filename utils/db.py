@@ -21,7 +21,8 @@ class BotDatabase:
                 password TEXT,
                 user_agent TEXT,
                 secret_code_id INT,
-                cookies TEXT
+                cookies TEXT,
+                last_action DATETIME
             );
         """)
 
@@ -31,6 +32,7 @@ class BotDatabase:
                 firstname TEXT,
                 lastname TEXT,
                 link TEXT,
+                date_add DATETIME,
                 FOREIGN KEY (chat_id) REFERENCES CONFIG(chat_id));
         """)
         return self.conn.commit()
@@ -42,7 +44,7 @@ class BotDatabase:
         return bool(len(result.fetchall()))
 
     def check_login_password(self, chat_id):
-        """Проверка, настроенна ли учетная запись (обязательно логин и пароль указан)"""
+        """Проверка, настроена ли учетная запись (обязательно логин и пароль указан)"""
         result = self.cursor.execute("SELECT login, password FROM config WHERE chat_id=?;", (str(chat_id), ))
         return all(result.fetchall()[0])
 
@@ -71,6 +73,10 @@ class BotDatabase:
         )
         return self.conn.commit()
 
+    def add_date_settings(self, chat_id):
+        self.cursor.execute("UPDATE users SET date_add=datetime('now', 'localtime') WHERE chat_id=?;", (str(chat_id),))
+        return self.conn.commit()
+
     # Получение данных
     def get_login_password(self, chat_id):
         """Получить логин и пароль учетной записи"""
@@ -78,32 +84,27 @@ class BotDatabase:
             result = self.cursor.execute("SELECT login, password FROM config WHERE chat_id=?;", (str(chat_id), ))
             return result.fetchone()
 
-    def get_username(self, chat_id):
-        """Получить короткую ссылку пользователя для логирования"""
-        if self.check_chat_id(chat_id=chat_id):
-            result = self.cursor.execute("""
-                SELECT firstname, lastname FROM users 
-                LEFT JOIN config ON users.chat_id = config.chat_id 
-                WHERE config.chat_id=?;
-            """, (str(chat_id), ))
-            return result.fetchone()
+    def get_session(self, chat_id):
+        """Получение данных для авторизации: user-agent, secretcodeId, cookies"""
+        result = self.cursor.execute(
+            "SELECT user_agent, secret_code_id, cookies FROM config WHERE chat_id=?;",
+            (str(chat_id),)
+        )
+        data = result.fetchone()
+        return (
+            eval(data[0]) if isinstance(data[0], str) else None,    # user_agent
+            data[1],                                                # secret_code_id
+            eval(data[2]) if isinstance(data[2], str) else None     # cookies
+        )
 
-    def get_user_agent(self, chat_id):
-        """Получить user-agent пользователя"""
-        result = self.cursor.execute("SELECT user_agent FROM config WHERE chat_id=?;", (str(chat_id), ))
-        result = result.fetchone()[0]
-        return eval(result) if isinstance(result, str) else None
-
-    def get_secret_code_id(self, chat_id):
-        """Получить secretcodeId пользователя"""
-        result = self.cursor.execute("SELECT secret_code_id FROM config WHERE chat_id=?;", (str(chat_id), ))
+    def get_last_action(self, chat_id):
+        """Получить дату и время последней активности куков"""
+        result = self.cursor.execute("SELECT last_action FROM config WHERE chat_id=?;", (str(chat_id),))
         return result.fetchone()[0]
 
-    def get_cookies(self, chat_id):
-        """Получить cookies пользователя"""
-        result = self.cursor.execute("SELECT cookies FROM config WHERE chat_id=?;", (str(chat_id), ))
-        result = result.fetchone()[0]
-        return eval(result) if isinstance(result, str) else None
+    def add_last_action(self, chat_id):
+        self.cursor.execute("UPDATE config SET last_action=datetime('now', 'localtime') WHERE chat_id=?;", (str(chat_id), ))
+        return self.conn.commit()
 
     # Изменений данных
     def edit_user_agent(self, chat_id, user_agent):
