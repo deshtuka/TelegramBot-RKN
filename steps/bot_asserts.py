@@ -40,7 +40,7 @@ def is_cookie_active_less_than_25_min(chat_id: int) -> bool:
     """
     datetime_string = BotDatabase.get_last_action(chat_id=chat_id)
 
-    if datetime_string is None:
+    if datetime_string is None or not isinstance(datetime_string, str):
         return False
 
     dt_bd = datetime.datetime.strptime(datetime_string, SQL_DATETIME_FORMAT)

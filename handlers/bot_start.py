@@ -18,14 +18,6 @@ def start_command(message):
     bot_asserts.check_user_exists_in_database(chat_id=chat_id)
 
 
-@bot.message_handler(commands='lol')
-def lol_command(message):
-    chat_id = message.chat.id
-
-    res = bot_asserts.is_cookie_active_less_than_25_min(chat_id=chat_id)
-    bot.send_message(chat_id, f'Результат = {res}')
-
-
 # Обработчик капчи. Ввод пользователем 2-4 цифр с картинки
 @bot.message_handler(content_types=['text'], regexp=r'^\d{2,4}$')
 def get_text_messages(message):
@@ -59,15 +51,13 @@ def create(callback_query):
 
     if is_session:
         # Формирование словаря дат
-        date_dict = {f'past_{i}': (datetime.datetime.today() - datetime.timedelta(days=i)).strftime('%d.%m.%Y') for i in
-                     range(0, 11 + 1)}
-
-        # Формирование списка объектов кнопок с датами выше
-        btn_list = [InlineKeyboardButton(val, callback_data=f'date_{val}') for val in date_dict.values()]
+        date_dict = {f'past_{i}': (datetime.datetime.today() - datetime.timedelta(days=i)).strftime('%d.%m.%Y')
+                     for i in range(0, 11 + 1)}
 
         # Добавление кнопок, вывод на экран
         inline_date = InlineKeyboardMarkup(row_width=3)
-        inline_date.add(*btn_list)
+        inline_date.add(*[InlineKeyboardButton(val, callback_data=f'date_{val}') for val in date_dict.values()])
+
         bot.send_message(chat_id, bot.msg.SELECT_DATE, reply_markup=inline_date)
     else:
         bot_steps.bot_get_captcha(bot, chat_id=chat_id)

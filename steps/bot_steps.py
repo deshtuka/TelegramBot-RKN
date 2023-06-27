@@ -30,7 +30,6 @@ def is_check_cookie(chat_id: int) -> tuple:
     """
     status, level, msg = False, 'WARNING', Message.COOKIES_BAD
 
-    # Получение данных из БД
     user_agent, secret_code_id, cookies = BotDatabase.get_session(chat_id=chat_id)
 
     if bot_asserts.is_cookie_active_less_than_25_min(chat_id=chat_id):
@@ -49,7 +48,7 @@ def get_captcha(chat_id: int) -> ...:
     """
     index = 0
 
-    while index < 5:
+    while index < 3:
         # GET-запрос к странице авторизации
         response = request.get_authorization_page()
 
@@ -61,9 +60,7 @@ def get_captcha(chat_id: int) -> ...:
         user_agent = str({'User-Agent': response.request.headers['User-Agent']})
 
         # Сохранение в БД (куков, secretcodeId, user-agent)
-        BotDatabase.edit_cookies(chat_id=chat_id, cookies=cookies)
-        BotDatabase.edit_secret_code_id(chat_id=chat_id, secret_code_id=secret_code_id)
-        BotDatabase.edit_user_agent(chat_id=chat_id, user_agent=user_agent)
+        BotDatabase.edit_session(chat_id, user_agent, secret_code_id, cookies)
 
         # GET-запрос на сохранение картинки с капчей
         file_name = f'{DIRECTORY_CAPTCHA}/{secret_code_id}.png'

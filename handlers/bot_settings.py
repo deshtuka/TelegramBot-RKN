@@ -13,19 +13,15 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 @bot.message_handler(commands='settings')
 def settings_command(message):
     chat_id = message.chat.id
-    # Проверка существования пользователя в Базе данных для вывода соответствующей команды
     command = bot.msg.BTN_EDIT if BotDatabase.check_chat_id(chat_id=chat_id) else bot.msg.BTN_CREATE
 
-    # Данные о пользователе
     firstname = message.json['chat'].get('first_name')
     lastname = message.json['chat'].get('last_name')
     username = message.json['chat'].get('username')
 
-    # Добавление информации о пользователе в БД для логирования его действий
     BotDatabase.add_personal_data(chat_id=chat_id, firstname=firstname, lastname=lastname, link=username)
     BotDatabase.add_date_settings(chat_id=chat_id)
 
-    # Вывод кнопок
     keyboard = InlineKeyboardMarkup()
     keyboard.row(
         InlineKeyboardButton(command, callback_data='settings_edit'),
@@ -39,20 +35,15 @@ def settings_command(message):
 # Вывод действий для настройки аккаунта
 @bot.callback_query_handler(lambda call: call.data and call.data == 'settings_edit')
 def setup_account(callback_query):
-    chat_id = callback_query.message.chat.id
-
-    # Бот. Снять состояние загрузки у кнопки, после клика
     bot.answer_callback_query(callback_query.id)
-
-    bot.send_message(chat_id=chat_id, text=bot.msg.INFO_LOGIN)
+    bot.send_message(chat_id=callback_query.message.chat.id, text=bot.msg.INFO_LOGIN)
 
 
 # Обработчик логина.
-@bot.message_handler(regexp=r'^(login=)')
+@bot.message_handler(regexp=r'(?i)^(login=)')
 def get_login_from_message(message):
     chat_id = message.chat.id
-    text_input = str(message.text)
-    login = text_input.replace('login=', '')
+    login = str(message.text).lower().replace('login=', '')
 
     # Добавление в БД Логина
     BotDatabase.edit_login(chat_id=chat_id, login=login)
@@ -61,11 +52,10 @@ def get_login_from_message(message):
 
 
 # Обработчик пароля.
-@bot.message_handler(regexp=r'^(password=)')
+@bot.message_handler(regexp=r'(?i)^(password=)')
 def get_password_from_message(message):
     chat_id = message.chat.id
-    text_input = str(message.text)
-    password = text_input.replace('password=', '')
+    password = str(message.text).lower().replace('password=', '')
 
     # Зашифровка пароля
     password_encrypted = Cryptography().custom_encrypt(message=password)
@@ -81,11 +71,11 @@ def get_password_from_message(message):
 def del_account(callback_query):
     chat_id = callback_query.message.chat.id
 
-    # Бот. Снять состояние загрузки у кнопки, после клика
-    bot.answer_callback_query(callback_query.id)
-
     # Удаление из БД всех данных
     BotDatabase.delete_account(chat_id=chat_id)
+
+    # Бот. Снять состояние загрузки у кнопки, после клика
+    bot.answer_callback_query(callback_query.id)
 
     bot.send_message(chat_id=chat_id, text=bot.msg.DATA_DEL)
 
