@@ -2,13 +2,19 @@
 """
 Файл для работы телеграмм бота
 """
-from config.public_keys import DIRECTORY_ARCHIVE_TEMP
+from config.public_keys import settings
 from steps import bot_steps, bot_asserts
 from utils import folders
 from bot import bot
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaDocument
 import datetime
+
+
+@bot.message_handler(commands='help')
+def start_command(message):
+    chat_id = message.chat.id
+    bot.send_message(chat_id, 'Работает')
 
 
 # Обработчик команды - start
@@ -131,6 +137,6 @@ def download_report_button(callback_query):
             bot.send_message(chat_id=chat_id, text=bot.msg.ERROR_UPLOAD_FILE_WITH_MSG.format(bot_msg))
 
         # Удаление временной папки
-        folders.remove(path_dir=DIRECTORY_ARCHIVE_TEMP.format(archive_id=link_id))
+        folders.remove(path_dir=settings.dir.archive_temp.format(archive_id=link_id))
     else:
         bot.send_message(chat_id=chat_id, text=bot_msg)

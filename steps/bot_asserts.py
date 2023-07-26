@@ -3,7 +3,7 @@
 Модуль функций проверок для обработчиков
 """
 from bot import bot, BotDatabase
-from config.public_keys import SQL_DATETIME_FORMAT
+from config.public_keys import settings
 
 import datetime
 
@@ -43,7 +43,7 @@ def is_cookie_active_less_than_25_min(chat_id: int) -> bool:
     if datetime_string is None or not isinstance(datetime_string, str):
         return False
 
-    dt_bd = datetime.datetime.strptime(datetime_string, SQL_DATETIME_FORMAT)
+    dt_bd = datetime.datetime.strptime(datetime_string, settings.const.sql_datetime_format)
 
     dt_now = datetime.datetime.now()
     diff = dt_now - dt_bd

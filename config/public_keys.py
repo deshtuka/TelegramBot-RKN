@@ -1,56 +1,74 @@
 ﻿# -*- coding: utf-8 -*-
 """
-Настройки скрипта
+Настройки проекта
 """
-from dotenv import load_dotenv
+from pydantic import BaseModel, BaseSettings, Field
 import os
-from sys import platform
 
 
-# Ссылки
-URL = 'https://portal.rfc-revizor.ru'
-URL_AUTH = 'https://portal.rfc-revizor.ru/login/'
-URL_CAPTCHA = 'https://portal.rfc-revizor.ru/captcha/{secretcodeId}'
-URL_REPORTS_CREATE = 'https://portal.rfc-revizor.ru/cabinet/myclaims-reports/create'
-URL_REPORTS = 'https://portal.rfc-revizor.ru/cabinet/myclaims-reports/'
-URL_DOWNLOAD_REPORT = 'https://portal.rfc-revizor.ru/cabinet/claims-reports/download/{archive_id}.zip'
+# Абсолютный путь до каталога проекта
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Локаторы
-XPATH_CAPTCHA_ID = '//*[@name="secretcodeId"]'
-XPATH_CAPTCHA_SRC = '//*[@alt="captcha"]'
-XPATH_HEADER = '//*[@class="watching list-table"]/thead/tr[1]/th'
-XPATH_TABLE_ROW = '//*[@class="watching list-table"]/tbody/tr'
-XPATH_MESSAGE_ERROR = '//*[contains(@class,"danger-inline")]'
 
-# Папки
-DIRECTORY_CAPTCHA = 'captcha_img'
-DIRECTORY_ARCHIVE = 'report'
-DIRECTORY_ARCHIVE_TEMP = f'{DIRECTORY_ARCHIVE}/tmp_{{archive_id}}'
-DIRECTORY_DEBUG = 'log'
-DIRECTORY_DATABASE = 'database'
-DIRECTORY_CONFIG = 'config'
+class Url(BaseModel):
+    """Ссылки"""
+    _base_url:          str = 'https://portal.rfc-revizor.ru'
+    auth:               str = f'{_base_url}/login/'
+    captcha:            str = f'{_base_url}/captcha/{{secretcodeId}}'
+    reports_create:     str = f'{_base_url}/cabinet/myclaims-reports/create'
+    reports:            str = f'{_base_url}/cabinet/myclaims-reports/'
+    download_report:    str = f'{_base_url}/cabinet/claims-reports/download/{{archive_id}}.zip'
 
-# Константы
-SQL_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
-# Конфигурационные файлы
-FILE_DEBUG = f'{DIRECTORY_DEBUG}/debug.log'
-FILE_ENV = f'{DIRECTORY_CONFIG}/secret_keys.env'
+class Xpath(BaseModel):
+    """Локаторы"""
+    captcha_id:     str = '//*[@name="secretcodeId"]'
+    # captcha_src:    str = '//*[@alt="captcha"]'
+    # header:         str = '//*[@class="watching list-table"]/thead/tr[1]/th'
+    table_row:      str = '//*[@class="watching list-table"]/tbody/tr'
+    message_error:  str = '//*[contains(@class,"danger-inline")]'
 
-# Секретные переменные окружения из env
-load_dotenv(FILE_ENV)
-TOKEN = os.getenv('TOKEN_BOT')
-CIPHER_KEY = bytes(os.getenv('CIPHER_KEY'), 'utf-8')
 
-# Файл БД согласно операционной системе
-if platform in ['linux', 'linux2']:
-    """ linux """
-    FILE_DATABASE = f'/root/rkn/{DIRECTORY_DATABASE}/database.db'
-elif platform == "darwin":
-    """ OS X """
-    pass
-elif platform == "win32":
-    """ Windows """
-    FILE_DATABASE = f'{DIRECTORY_DATABASE}/database.db'
-else:
-    raise ValueError('Не определена операционная система и не получен файл БД')
+class Directory(BaseModel):
+    """Каталоги проекта"""
+    captcha:        str = f'{BASE_DIR}/captcha_img'
+    archive:        str = f'{BASE_DIR}/report'
+    archive_temp:   str = f'{archive}/tmp_{{archive_id}}'
+    debug:          str = f'{BASE_DIR}/log'
+    database:       str = f'{BASE_DIR}/database'
+    config:         str = f'{BASE_DIR}/config'
+
+
+class File(BaseModel):
+    """Конфигурационные файлы"""
+    debug:      str = f'{Directory().debug}/debug.log'
+    env:        str = f'{Directory().config}/secret_keys.env'
+    database:   str = f'{Directory().database}/database.db'
+
+
+class Constants(BaseModel):
+    """Константы"""
+    sql_datetime_format = '%Y-%m-%d %H:%M:%S'
+
+
+class Env(BaseSettings):
+    """Секретные переменные окружения из env"""
+
+    token: str = Field('Test', env="TOKEN_BOT")
+    cipher_key: bytes = Field('Test', env="CIPHER_KEY")
+
+    class Config:
+        env_file = File().env
+        env_file_encoding = 'utf-8'
+
+
+class Settings(BaseSettings):
+    url = Url()
+    xpath = Xpath()
+    dir = Directory()
+    file = File()
+    const = Constants()
+    env = Env()
+
+
+settings = Settings()

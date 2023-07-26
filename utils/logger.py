@@ -3,10 +3,10 @@
 """
 import time
 from loguru import logger
-from config.public_keys import FILE_DEBUG
+from config.public_keys import settings
 
 
-logger.add(FILE_DEBUG, format='{time} {level} {message}', level='TRACE',
+logger.add(settings.file.debug, format='{time} {level} {message}', level='TRACE',
            rotation='7 day', compression='zip')
 
 

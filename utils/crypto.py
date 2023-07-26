@@ -3,7 +3,7 @@
 Функции по шифрованию/дешифрованию сообщений
 """
 
-from config.public_keys import CIPHER_KEY
+from config.public_keys import settings
 from utils.logger import logger
 
 from cryptography.fernet import Fernet
@@ -19,7 +19,7 @@ class Common:
 class Cryptography(Common):
 
     @staticmethod
-    def generate_obj_fernet(password: bytes = CIPHER_KEY) -> Fernet:
+    def generate_obj_fernet(password: bytes = settings.env.cipher_key) -> Fernet:
         """ Генерация объекта класса Fernet
 
         Args:

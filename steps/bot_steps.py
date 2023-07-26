@@ -7,7 +7,7 @@ from request_api.request_api import ApiRequests
 from steps import bot_asserts
 from utils import functions, file, folders, logger
 from utils.crypto import Cryptography
-from config.public_keys import URL_CAPTCHA, DIRECTORY_CAPTCHA, URL_DOWNLOAD_REPORT, DIRECTORY_ARCHIVE_TEMP
+from config.public_keys import settings
 from bot import BotDatabase
 from config.bot_message import Message
 
@@ -53,7 +53,7 @@ def get_captcha(chat_id: int) -> ...:
         response = request.get_authorization_page()
 
         secret_code_id = functions.get_secretcodeid_from_captcha_on_login_page(response=response)
-        img_url = URL_CAPTCHA.format(secretcodeId=secret_code_id)
+        img_url = settings.url.captcha.format(secretcodeId=secret_code_id)
 
         # Получение CookieJar и сохранение Dict как str -> "{'key': 'value'}"
         cookies = str(request.requests.utils.dict_from_cookiejar(response.cookies))
@@ -63,7 +63,7 @@ def get_captcha(chat_id: int) -> ...:
         BotDatabase.edit_session(chat_id, user_agent, secret_code_id, cookies)
 
         # GET-запрос на сохранение картинки с капчей
-        file_name = f'{DIRECTORY_CAPTCHA}/{secret_code_id}.png'
+        file_name = f'{settings.dir.captcha}/{secret_code_id}.png'
         response = request.get_download_captcha(url=img_url, cookies=response.cookies)
         if file.save_image_from_request_body(response=response, file_name=file_name):
             break
@@ -170,7 +170,7 @@ def download_the_selected_report(chat_id: int, archive_id: str):
 
     if is_cookie:
         # Создаем ссылку -> url
-        url_download = URL_DOWNLOAD_REPORT.format(archive_id=archive_id)
+        url_download = settings.url.download_report.format(archive_id=archive_id)
 
         # GET-запрос на скачивание отчета
         response = request.get_save_file_on_pc(url=url_download, headers=user_agent, cookies=cookies)
@@ -180,7 +180,7 @@ def download_the_selected_report(chat_id: int, archive_id: str):
 
         if is_archive:
             # Создание временной папки
-            folders.create(path_dirs=DIRECTORY_ARCHIVE_TEMP.format(archive_id=archive_id))
+            folders.create(path_dirs=settings.dir.archive_temp.format(archive_id=archive_id))
             # Распаковка архива
             path_to_files, message_from_csv = functions.unpacking_archive(archive_id=archive_id,
                                                                           path_archive=path_archive)

@@ -9,13 +9,13 @@ from utils import file
 from utils.logger import logger
 
 
-def create(path_dirs: Union[str, list]):
+def create(path_dirs: Union[str, dict]):
     """Создание каталога
 
     Args:
         path_dirs: путь до каталога или списка каталогов
     """
-    directory = [path_dirs] if isinstance(path_dirs, str) else path_dirs
+    directory = path_dirs.values() if isinstance(path_dirs, dict) else [path_dirs]
 
     for direct in directory:
         try:

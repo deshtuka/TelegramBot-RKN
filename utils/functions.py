@@ -4,7 +4,7 @@
 """
 from typing import Union
 
-from config import public_keys
+from config.public_keys import settings
 from utils import logger
 
 from lxml import html
@@ -30,7 +30,7 @@ def get_secretcodeid_from_captcha_on_login_page(response):
 
         tree_content = html.fromstring(response.content)
 
-        secret_code_obj = tree_content.xpath(public_keys.XPATH_CAPTCHA_ID)
+        secret_code_obj = tree_content.xpath(settings.xpath.captcha_id)
         secret_code = [str(obj.attrib['value']) for obj in secret_code_obj][0]
 
     return secret_code
@@ -47,7 +47,7 @@ def save_file_from_request(response, archive_id: str) -> tuple:
         True/False: Успешно или нет скачан файл
         file_full_name: полный путь до файла
     """
-    file_full_name = f'{public_keys.DIRECTORY_ARCHIVE}/{archive_id}.zip'
+    file_full_name = f'{settings.dir.archive}/{archive_id}.zip'
 
     with open(file_full_name, 'wb') as archive:
         archive.write(response.content)
@@ -70,7 +70,7 @@ def scraping_page_auth(response):
     if response.status_code == 200:
         tree_content = html.fromstring(response.content)
 
-        messages_obj = tree_content.xpath(public_keys.XPATH_MESSAGE_ERROR)
+        messages_obj = tree_content.xpath(settings.xpath.message_error)
         messages_list = [str(obj.text) for obj in messages_obj]
 
         if len(messages_list) > 0:
@@ -89,7 +89,7 @@ def scraping_page_my_reports(response) -> Union[dict, str]:
         response: тело ответа
     """
     result_dict = dict()
-    xpath_table_row = public_keys.XPATH_TABLE_ROW
+    xpath_table_row = settings.xpath.table_row
 
     # [<Response [302]>] - history[0].status_code
     if response.status_code == 200:
@@ -130,7 +130,7 @@ def unpacking_archive(archive_id: str, path_archive: str) -> tuple:
         path_to_files: полный путь до файлов PDF и CSV во временной папке
         message_from_csv: формулировка из CSV файла
     """
-    tmp_dir = public_keys.DIRECTORY_ARCHIVE_TEMP.format(archive_id=archive_id)
+    tmp_dir = settings.dir.archive_temp.format(archive_id=archive_id)
 
     # Распаковка архива
     with ZipFile(path_archive, 'r') as zip_file:

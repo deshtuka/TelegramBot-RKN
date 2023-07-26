@@ -9,7 +9,7 @@ from user_agent import generate_user_agent
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
-from config import public_keys
+from config.public_keys import settings
 from utils import logger
 
 
@@ -76,7 +76,7 @@ class ApiRequests:
         Returns:
             response: объект класса requests.Response.
         """
-        return self.send_request(url=public_keys.URL_AUTH, method='GET')
+        return self.send_request(url=settings.url.auth, method='GET')
 
     @logger.log_time('GET-запрос - Сохранение капчи на компьютер')
     def get_download_captcha(self, url: str, cookies: RequestsCookieJar) -> requests.Response:
@@ -113,7 +113,7 @@ class ApiRequests:
             'secretcodestatus': secret_code_status,
             'secretcodeId': secret_code_id
         }
-        return self.send_request(url=public_keys.URL_AUTH, method='POST', headers=headers, data=data, cookies=cookies)
+        return self.send_request(url=settings.url.auth, method='POST', headers=headers, data=data, cookies=cookies)
 
     @logger.log_time('GET-запрос - Получение информации о состояние отчетов')
     def get_page_report(self, headers: dict, cookies: dict) -> requests.Response:
@@ -126,7 +126,7 @@ class ApiRequests:
         Return:
             Авторизованная сессия
         """
-        return self.send_request(url=public_keys.URL_REPORTS, method='GET', headers=headers, cookies=cookies)
+        return self.send_request(url=settings.url.reports, method='GET', headers=headers, cookies=cookies)
 
     @logger.log_time('POST-запрос - Создание заявки')
     def post_create_report(self, date: str, headers: dict, cookies: RequestsCookieJar) -> requests.Response:
@@ -144,7 +144,7 @@ class ApiRequests:
             'reportDate': date,  # Пример: 18.03.2022
             'onlyMyClaims': 1
         }
-        return self.send_request(url=public_keys.URL_REPORTS_CREATE, method='POST', headers=headers, data=data, cookies=cookies)
+        return self.send_request(url=settings.url.reports_create, method='POST', headers=headers, data=data, cookies=cookies)
 
     @logger.log_time('GET-запрос - Скачивание архива')
     def get_save_file_on_pc(self, url, headers: dict, cookies: RequestsCookieJar) -> requests.Response:
