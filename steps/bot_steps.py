@@ -8,8 +8,7 @@ from steps import bot_asserts
 from utils import functions, file, folders, logger
 from utils.crypto import Cryptography
 from config.public_keys import settings
-from bot import BotDatabase
-from config.bot_message import Message
+from bot import BotDatabase, bot
 
 from typing import Tuple, Union
 
@@ -28,13 +27,13 @@ def is_check_cookie(chat_id: int) -> tuple:
         user_agent: агент из файла
         secret_code_id: секрет код
     """
-    status, level, msg = False, 'WARNING', Message.COOKIES_BAD
+    status, level, msg = False, 'WARNING', bot.msg.COOKIES_BAD
 
     user_agent, secret_code_id, cookies = BotDatabase.get_session(chat_id=chat_id)
 
     if bot_asserts.is_cookie_active_less_than_25_min(chat_id=chat_id):
         if user_agent is not None and cookies is not None:
-            status, level, msg = True, 'SUCCESS', Message.COOKIES_GOOD
+            status, level, msg = True, 'SUCCESS', bot.msg.COOKIES_GOOD
 
     logger.logger.log(level, msg)
     return status, cookies, user_agent, secret_code_id
@@ -97,7 +96,7 @@ def authorization(secret_code_status: int, chat_id: int) -> Tuple[bool, str]:
     # Получение данных из БД
     login, password_encoded = BotDatabase.get_login_password(chat_id=chat_id)
     if not login or not password_encoded:
-        return False, Message.INFO_SETTING
+        return False, bot.msg.INFO_SETTING
 
     user_agent, secret_code_id, cookies = BotDatabase.get_session(chat_id=chat_id)
 
@@ -188,6 +187,6 @@ def download_selected_report(chat_id: int, archive_id: str):
             BotDatabase.add_last_action(chat_id=chat_id)
             return True, message_from_csv, path_to_files
         else:
-            return False, Message.ERROR_DOWNLOAD, ''
+            return False, bot.msg.ERROR_DOWNLOAD, ''
     else:
-        return False, Message.ERROR_AUTH, ''
+        return False, bot.msg.ERROR_AUTH, ''

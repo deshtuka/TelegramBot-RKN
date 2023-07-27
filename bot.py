@@ -6,9 +6,11 @@ import handlers
 
 from config.public_keys import settings
 from config.bot_message import Message, Commands
-from utils import folders, db, logger, middleware
+from utils import folders, db, logger
+import middlewares
 from dispatcher import bot
 from telebot.types import BotCommand
+
 
 BotDatabase = db.BotDatabase(settings.file.database)
 
@@ -18,7 +20,7 @@ if __name__ == '__main__':
     BotDatabase.create_table_db()
 
     # Настройка бота
-    bot.setup_middleware(middleware.CustomMiddleware())
+    bot.setup_middleware(middlewares.middleware.CustomMiddleware())
     bot.msg = Message()
 
     # Список первоначальных команд
