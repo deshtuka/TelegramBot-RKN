@@ -1,6 +1,15 @@
 """
 Модуль константных сообщений бота
 """
+from pydantic import BaseModel
+
+
+class Commands(BaseModel):
+    """Класс команд с кратким описанием"""
+    start:      str = 'Начало'
+    settings:   str = 'Настройка учетной записи'
+    help:       str = 'О проекте'
+    feedback:   str = 'Написать отзыв'
 
 
 class Message:

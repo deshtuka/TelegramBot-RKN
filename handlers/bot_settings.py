@@ -9,9 +9,8 @@ from utils.crypto import Cryptography
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-# Обработчик команды - settings
-@bot.message_handler(commands='settings')
-def settings_command(message):
+def command_settings(message):
+    """ Обработчик команды - settings """
     chat_id = message.chat.id
     command = bot.msg.BTN_EDIT if BotDatabase.check_chat_id(chat_id=chat_id) else bot.msg.BTN_CREATE
 
@@ -32,61 +31,48 @@ def settings_command(message):
     bot.send_message(chat_id=message.chat.id, text=bot.msg.INFO_ACCOUNT, reply_markup=keyboard)
 
 
-# Вывод действий для настройки аккаунта
-@bot.callback_query_handler(lambda call: call.data and call.data == 'settings_edit')
-def setup_account(callback_query):
+def button_setup_account(callback_query):
+    """ Вывод кнопок для настройки аккаунта """
     bot.answer_callback_query(callback_query.id)
     bot.send_message(chat_id=callback_query.message.chat.id, text=bot.msg.INFO_LOGIN)
 
 
-# Обработчик логина.
-@bot.message_handler(regexp=r'(?i)^(login=)')
-def get_login_from_message(message):
+def handler_login_from_message(message):
+    """ Обработчик логина """
     chat_id = message.chat.id
     login = str(message.text).lower().replace('login=', '')
 
-    # Добавление в БД Логина
     BotDatabase.edit_login(chat_id=chat_id, login=login)
 
     bot.send_message(chat_id=chat_id, text=bot.msg.INFO_PASSWORD)
 
 
-# Обработчик пароля.
-@bot.message_handler(regexp=r'(?i)^(password=)')
-def get_password_from_message(message):
+def handler_password_from_message(message):
+    """ Обработчик пароля """
     chat_id = message.chat.id
     password = str(message.text).lower().replace('password=', '')
 
-    # Зашифровка пароля
     password_encrypted = Cryptography().custom_encrypt(message=password)
 
-    # Добавление в БД Пароля
     BotDatabase.edit_password(chat_id=chat_id, password=password_encrypted)
 
     bot.send_message(chat_id=chat_id, text=bot.msg.DATA_SAVE)
 
 
-# Удаление аккаунта
-@bot.callback_query_handler(lambda call: call.data and call.data == 'settings_delete')
-def del_account(callback_query):
+def handler_del_account(callback_query):
+    """ Обработчик удаления аккаунта """
     chat_id = callback_query.message.chat.id
 
-    # Удаление из БД всех данных
     BotDatabase.delete_account(chat_id=chat_id)
 
-    # Бот. Снять состояние загрузки у кнопки, после клика
-    bot.answer_callback_query(callback_query.id)
+    bot.answer_callback_query(callback_query.id)    # Отжать кнопку
 
     bot.send_message(chat_id=chat_id, text=bot.msg.DATA_DEL)
 
 
-# Отмена настройки аккаунта
-@bot.callback_query_handler(lambda call: call.data and call.data == 'settings_cancel')
-def user_cancel(callback_query):
-    chat_id = callback_query.message.chat.id
-
-    # Бот. Снять состояние загрузки у кнопки, после клика
+def handler_cancel_settings(callback_query):
+    """ Обработчик отмены настройки аккаунта """
     bot.answer_callback_query(callback_query.id)
 
     # Вывод кнопок как при клике/вводе команды "/start"
-    bot_asserts.check_user_exists_in_database(chat_id=chat_id)
+    bot_asserts.check_user_exists_in_database(chat_id=callback_query.message.chat.id)

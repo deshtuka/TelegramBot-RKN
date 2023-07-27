@@ -155,7 +155,7 @@ def create_report_for_date(chat_id: int, date: str) -> bool:
     return False
 
 
-def download_the_selected_report(chat_id: int, archive_id: str):
+def download_selected_report(chat_id: int, archive_id: str):
     """Скачивание архива выбранного отчета
 
     Args:

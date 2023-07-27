@@ -11,27 +11,13 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMedia
 import datetime
 
 
-@bot.message_handler(commands='help')
-def start_command(message):
-    chat_id = message.chat.id
-    bot.send_message(chat_id, 'Работает')
+def command_start(message):
+    """ Обработчик команды - start"""
+    bot_asserts.check_user_exists_in_database(chat_id=message.chat.id)
 
 
-# Обработчик команды - start
-@bot.message_handler(commands='start')
-def start_command(message):
-    chat_id = message.chat.id
-    bot_asserts.check_user_exists_in_database(chat_id=chat_id)
-
-
-# Обработчик капчи. Ввод пользователем 2-4 цифр с картинки
-@bot.message_handler(content_types=['text'], regexp=r'^\d{2,4}$')
-def get_text_messages(message):
-    """ Обработчик текстовых сообщений чата
-
-    Args:
-        message: данные чата
-    """
+def handler_captcha(message):
+    """ Обработчик текстовых сообщений чата. Ввод пользователем 2-4 цифр с картинки """
     chat_id = message.chat.id
 
     is_auth, msg_auth = bot_steps.authorization(secret_code_status=int(message.text), chat_id=chat_id)
@@ -46,14 +32,12 @@ def get_text_messages(message):
         bot.send_message(chat_id, bot.msg.ERROR_WITH_MSG.format(msg_auth))
 
 
-# Вывод кнопок. Доступные даты для отправки создания заявки
-@bot.callback_query_handler(lambda call: call.data and call.data == 'report_crt')
-def create(callback_query):
+def button_create_report(callback_query):
+    """ Вывод кнопок. Доступные даты для отправки создания заявки """
     chat_id = callback_query.message.chat.id
     is_session = bot_steps.is_check_cookie(chat_id=chat_id)[0]
 
-    # Бот. Снять состояние загрузки у кнопки, после клика
-    bot.answer_callback_query(callback_query.id)
+    bot.answer_callback_query(callback_query.id)    # Отжать кнопку
 
     if is_session:
         # Формирование словаря дат
@@ -69,30 +53,26 @@ def create(callback_query):
         bot_steps.bot_get_captcha(bot, chat_id=chat_id)
 
 
-# Обработчик. Пользователь выбрал кнопку с датой (Пример: 12.02.2021) - отправить запрос создания заявки
-@bot.callback_query_handler(lambda call: call.data and call.data.startswith('date_'))
-def check_date_button(callback_query):
+def handler_create_report(callback_query):
+    """ Обработчик создания заявки. Пользователь выбрал кнопку с датой (Пример: 12.02.2021) """
     date = callback_query.data[5:]  # Дата формата dd.mm.YYYY
     chat_id = callback_query.message.chat.id
 
     # POST-запрос создания заявки
     is_response = bot_steps.create_report_for_date(date=date, chat_id=chat_id)
 
-    # Бот. Снять состояние загрузки у кнопки, после клика
-    bot.answer_callback_query(callback_query.id)
+    bot.answer_callback_query(callback_query.id)    # Отжать кнопку
 
     msg = bot.msg.REQUEST_SENT.format(date) if is_response else bot.msg.REQUEST_NOT_SENT
     bot.send_message(chat_id, text=msg)
 
 
-# Вывод кнопок. Получение данных с отчетами и вывод кнопок для выбора отчета на скачивание
-@bot.callback_query_handler(lambda call: call.data and call.data == 'report_get')
-def get_report(callback_query):
+def button_get_report(callback_query):
+    """ Вывод кнопок. Получение данных с отчетами и вывод кнопок для выбора отчета на скачивание """
     chat_id = callback_query.message.chat.id
     is_session = bot_steps.is_check_cookie(chat_id=chat_id)[0]
 
-    # Бот. Снять состояние загрузки у кнопки, после клика
-    bot.answer_callback_query(callback_query.id)
+    bot.answer_callback_query(callback_query.id)    # Отжать кнопку
 
     if is_session:
         # GET-запрос на получение страницы Отчетов
@@ -112,17 +92,15 @@ def get_report(callback_query):
     bot_steps.bot_get_captcha(bot, chat_id=chat_id)
 
 
-# Обработчик. Скачивание выбранного отчета
-@bot.callback_query_handler(lambda call: call.data and call.data.startswith('rsp_'))
-def download_report_button(callback_query):
+def handler_download_report(callback_query):
+    """ Обработчик скачивания выбранного отчета """
     chat_id = callback_query.message.chat.id
-    link_id = callback_query.data.split('_')[-1]    # id отчета для подстановки в ссылку
-    date_rep = callback_query.data.split('_')[2]    # дата получаемого отчета
+    link_id = callback_query.data.split('_')[-1]    # ID отчета для подстановки в ссылку
+    date_rep = callback_query.data.split('_')[2]    # Дата получаемого отчета
 
-    is_response, bot_msg, path_to_files = bot_steps.download_the_selected_report(chat_id=chat_id, archive_id=link_id)
+    is_response, bot_msg, path_to_files = bot_steps.download_selected_report(chat_id=chat_id, archive_id=link_id)
 
-    # Бот. Снять состояние загрузки у кнопки, после клика
-    bot.answer_callback_query(callback_query.id)
+    bot.answer_callback_query(callback_query.id)    # Отжать кнопку
 
     if is_response:
         # Выгрузка в чат файлов + текст из csv
@@ -136,7 +114,6 @@ def download_report_button(callback_query):
         else:
             bot.send_message(chat_id=chat_id, text=bot.msg.ERROR_UPLOAD_FILE_WITH_MSG.format(bot_msg))
 
-        # Удаление временной папки
         folders.remove(path_dir=settings.dir.archive_temp.format(archive_id=link_id))
     else:
         bot.send_message(chat_id=chat_id, text=bot_msg)
