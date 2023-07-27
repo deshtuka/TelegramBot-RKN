@@ -2,6 +2,7 @@
 from bot import bot
 from . import bot_start as start
 from . import bot_settings as settings
+from . import bot_about as about
 
 
 # Start
@@ -26,3 +27,6 @@ bot.register_callback_query_handler(settings.handler_cancel_settings,
                                     func=lambda call: call.data and call.data == 'settings_cancel')
 bot.register_message_handler(settings.handler_login_from_message, regexp=r'(?i)^(login=)')
 bot.register_message_handler(settings.handler_password_from_message, regexp=r'(?i)^(password=)')
+
+# About
+bot.register_message_handler(about.command_about, commands=['about'])
