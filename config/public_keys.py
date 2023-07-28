@@ -2,7 +2,7 @@
 """
 Настройки проекта
 """
-from pydantic import BaseModel, BaseSettings, Field
+from pydantic import BaseModel, BaseSettings, Field, AnyHttpUrl
 import os
 
 
@@ -12,19 +12,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class Url(BaseModel):
     """Ссылки"""
-    _base_url:          str = 'https://portal.rfc-revizor.ru'
-    auth:               str = f'{_base_url}/login/'
-    captcha:            str = f'{_base_url}/captcha/{{secretcodeId}}'
-    reports_create:     str = f'{_base_url}/cabinet/myclaims-reports/create'
-    reports:            str = f'{_base_url}/cabinet/myclaims-reports/'
-    download_report:    str = f'{_base_url}/cabinet/claims-reports/download/{{archive_id}}.zip'
+    _base_url:          AnyHttpUrl = 'https://portal.rfc-revizor.ru'
+    auth:               AnyHttpUrl = f'{_base_url}/login/'
+    captcha:            AnyHttpUrl = f'{_base_url}/captcha/{{secretcodeId}}'
+    reports_create:     AnyHttpUrl = f'{_base_url}/cabinet/myclaims-reports/create'
+    reports:            AnyHttpUrl = f'{_base_url}/cabinet/myclaims-reports/'
+    download_report:    AnyHttpUrl = f'{_base_url}/cabinet/claims-reports/download/{{archive_id}}.zip'
 
 
 class Xpath(BaseModel):
     """Локаторы"""
     captcha_id:     str = '//*[@name="secretcodeId"]'
-    # captcha_src:    str = '//*[@alt="captcha"]'
-    # header:         str = '//*[@class="watching list-table"]/thead/tr[1]/th'
     table_row:      str = '//*[@class="watching list-table"]/tbody/tr'
     message_error:  str = '//*[contains(@class,"danger-inline")]'
 

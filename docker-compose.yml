@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  rkn_bot:
+    # Указание пути до Dockerfile для сборки
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Запуск от пользователя рут (для создания БД)
+    user: root
+
+    # Автоматическая перезагрузка сервиса, в случае его внезапной остановки
+    restart: always
+
+    # Имя контейнера
+    container_name: rkn_bot
+
+    # Рабочая директория
+    working_dir: /usr/src/app/rkn_bot
+
+    # Файл с переменными окружениями
+    env_file:
+      - ./config/secret_keys.env
+
+    volumes:
+      # Монтирование локального файла в контейнер с правами Записи/Чтения
+      - /usr/src/app/database:/usr/src/app/rkn_bot/database
+      - /usr/src/app/database/database.db:/usr/src/app/rkn_bot/database/database.db:rw
+
+    # Команда запуска после создания образа
+    command: python ./bot.py
