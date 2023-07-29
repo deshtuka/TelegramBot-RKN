@@ -9,8 +9,8 @@ from user_agent import generate_user_agent
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
-from config.public_keys import settings
-from utils import logger
+from src.core.config import settings
+from src.core import logger
 
 
 class ApiRequests:

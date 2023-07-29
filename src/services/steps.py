@@ -3,11 +3,12 @@
 Бизнес логика телеграм бота
 """
 
-from request_api.request_api import ApiRequests
-from steps import bot_asserts
-from utils import functions, file, folders, logger
-from utils.crypto import Cryptography
-from config.public_keys import settings
+from src.api.request import ApiRequests
+from src.services import asserts
+from src.utils import file, folders, functions
+from src.core import logger
+from src.utils.crypto import Cryptography
+from src.core.config import settings
 from bot import BotDatabase, bot
 
 from typing import Tuple, Union
@@ -31,7 +32,7 @@ def is_check_cookie(chat_id: int) -> tuple:
 
     user_agent, secret_code_id, cookies = BotDatabase.get_session(chat_id=chat_id)
 
-    if bot_asserts.is_cookie_active_less_than_25_min(chat_id=chat_id):
+    if asserts.is_cookie_active_less_than_25_min(chat_id=chat_id):
         if user_agent is not None and cookies is not None:
             status, level, msg = True, 'SUCCESS', bot.msg.COOKIES_GOOD
 

@@ -3,7 +3,7 @@
 from telebot.handler_backends import BaseMiddleware
 from telebot import types
 
-from utils.logger import log_active_user
+from src.core.logger import log_active_user
 
 
 class CustomMiddleware(BaseMiddleware):

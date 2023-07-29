@@ -2,12 +2,12 @@
 
 ## Список запросов совершаемых на сервер:
 1) Авторизация:
-    * [GET-запрос получения данных для авторизации](https://portal.rfc-revizor.ru/login/)
-    * [GET-запрос скачивания картинки с капчей](https://portal.rfc-revizor.ru/captcha/{secretcodeId})
-    * [POST-запрос авторизации с капчей](https://portal.rfc-revizor.ru/login/)
-2) [POST-запрос создания заявки на дату](https://portal.rfc-revizor.ru/cabinet/myclaims-reports/create)
-3) [GET-запрос на получение списка заявок](https://portal.rfc-revizor.ru/cabinet/myclaims-reports/)
-4) [GET-запрос на скачивание заявки](https://portal.rfc-revizor.ru/cabinet/claims-reports/download/{archive_id}.zip)
+    * GET-запрос получения данных для авторизации (https://portal.rfc-revizor.ru/login/)
+    * GET-запрос скачивания картинки с капчей (https://portal.rfc-revizor.ru/captcha/{secretcodeId})
+    * POST-запрос авторизации с капчей (https://portal.rfc-revizor.ru/login/)
+2) POST-запрос создания заявки на дату (https://portal.rfc-revizor.ru/cabinet/myclaims-reports/create)
+3) GET-запрос на получение списка заявок (https://portal.rfc-revizor.ru/cabinet/myclaims-reports/)
+4) GET-запрос на скачивание заявки (https://portal.rfc-revizor.ru/cabinet/claims-reports/download/{archive_id}.zip)
 
 ---
 

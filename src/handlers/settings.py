@@ -3,8 +3,8 @@
 Файл для работы телеграмм бота
 """
 from bot import bot, BotDatabase
-from steps import bot_asserts
-from utils.crypto import Cryptography
+from src.services import asserts
+from src.utils.crypto import Cryptography
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -75,4 +75,4 @@ def handler_cancel_settings(callback_query):
     bot.answer_callback_query(callback_query.id)
 
     # Вывод кнопок как при клике/вводе команды "/start"
-    bot_asserts.check_user_exists_in_database(chat_id=callback_query.message.chat.id)
+    asserts.check_user_exists_in_database(chat_id=callback_query.message.chat.id)

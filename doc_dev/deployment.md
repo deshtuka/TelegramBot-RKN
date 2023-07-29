@@ -10,12 +10,12 @@ https://github.com/deshtuka/TelegramBot-RKN.git
 
 ### Добавить закрытые креды "secret_keys.env"
 
-1) Создать файл "secret_keys.env" в каталоге проекта "config"
+1) Создать файл "secret_keys.env" в корне проекта
 ```bush
-touch /config/secret_keys.env
+touch /secret_keys.env
 ```
 
-2) Добавить данные, пример наполнения файла:
+2) Добавить данные. Пример наполнения файла:
 ```dotenv
 TOKEN_BOT="0123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 CIPHER_KEY="0123456789"
@@ -55,9 +55,14 @@ docker-compose down
 
 ### Обновления проекта
 
-Команда для обновления ветки
+Команда для обновления ветки:
 ```bush
 cd ../usr/src/app/TelegramBot-RKN/
 git fetch
 git rebase origin/main
+```
+
+В случае локальных конфликтов:
+```bush
+git reset --hard origin/main
 ```

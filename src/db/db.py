@@ -3,7 +3,7 @@
 Класс с методами для работы с базой данных
 """
 import sqlite3
-from utils.logger import logger
+from loguru import logger
 
 
 class BotDatabase:

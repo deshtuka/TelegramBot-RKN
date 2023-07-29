@@ -2,9 +2,9 @@
 """
 Файл для работы телеграмм бота
 """
-from config.public_keys import settings
-from steps import bot_steps, bot_asserts
-from utils import folders
+from src.core.config import settings
+from src.services import asserts, steps
+from src.utils import folders
 from bot import bot
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaDocument
@@ -13,14 +13,14 @@ import datetime
 
 def command_start(message):
     """ Обработчик команды - start"""
-    bot_asserts.check_user_exists_in_database(chat_id=message.chat.id)
+    asserts.check_user_exists_in_database(chat_id=message.chat.id)
 
 
 def handler_captcha(message):
     """ Обработчик текстовых сообщений чата. Ввод пользователем 2-4 цифр с картинки """
     chat_id = message.chat.id
 
-    is_auth, msg_auth = bot_steps.authorization(secret_code_status=int(message.text), chat_id=chat_id)
+    is_auth, msg_auth = steps.authorization(secret_code_status=int(message.text), chat_id=chat_id)
     if is_auth:
         keyboard = InlineKeyboardMarkup()
         keyboard.row(
@@ -35,7 +35,7 @@ def handler_captcha(message):
 def button_create_report(callback_query):
     """ Вывод кнопок. Доступные даты для отправки создания заявки """
     chat_id = callback_query.message.chat.id
-    is_session = bot_steps.is_check_cookie(chat_id=chat_id)[0]
+    is_session = steps.is_check_cookie(chat_id=chat_id)[0]
 
     bot.answer_callback_query(callback_query.id)    # Отжать кнопку
 
@@ -50,7 +50,7 @@ def button_create_report(callback_query):
 
         bot.send_message(chat_id, bot.msg.SELECT_DATE, reply_markup=inline_date)
     else:
-        bot_steps.bot_get_captcha(bot, chat_id=chat_id)
+        steps.bot_get_captcha(bot, chat_id=chat_id)
 
 
 def handler_create_report(callback_query):
@@ -59,7 +59,7 @@ def handler_create_report(callback_query):
     chat_id = callback_query.message.chat.id
 
     # POST-запрос создания заявки
-    is_response = bot_steps.create_report_for_date(date=date, chat_id=chat_id)
+    is_response = steps.create_report_for_date(date=date, chat_id=chat_id)
 
     bot.answer_callback_query(callback_query.id)    # Отжать кнопку
 
@@ -70,13 +70,13 @@ def handler_create_report(callback_query):
 def button_get_report(callback_query):
     """ Вывод кнопок. Получение данных с отчетами и вывод кнопок для выбора отчета на скачивание """
     chat_id = callback_query.message.chat.id
-    is_session = bot_steps.is_check_cookie(chat_id=chat_id)[0]
+    is_session = steps.is_check_cookie(chat_id=chat_id)[0]
 
     bot.answer_callback_query(callback_query.id)    # Отжать кнопку
 
     if is_session:
         # GET-запрос на получение страницы Отчетов
-        response_result = bot_steps.page_report(chat_id=chat_id)
+        response_result = steps.page_report(chat_id=chat_id)
 
         if isinstance(response_result, dict) and len(response_result) > 0:
             # Вывод в чат кнопок с отчетами
@@ -89,7 +89,7 @@ def button_get_report(callback_query):
             bot.send_message(chat_id=chat_id, text=bot.msg.REPORT_STATUS, reply_markup=inline_response)
             return None
         bot.send_message(chat_id=chat_id, text=bot.msg.ERROR_AUTH)
-    bot_steps.bot_get_captcha(bot, chat_id=chat_id)
+    steps.bot_get_captcha(bot, chat_id=chat_id)
 
 
 def handler_download_report(callback_query):
@@ -98,7 +98,7 @@ def handler_download_report(callback_query):
     link_id = callback_query.data.split('_')[-1]    # ID отчета для подстановки в ссылку
     date_rep = callback_query.data.split('_')[2]    # Дата получаемого отчета
 
-    is_response, bot_msg, path_to_files = bot_steps.download_selected_report(chat_id=chat_id, archive_id=link_id)
+    is_response, bot_msg, path_to_files = steps.download_selected_report(chat_id=chat_id, archive_id=link_id)
 
     bot.answer_callback_query(callback_query.id)    # Отжать кнопку
 

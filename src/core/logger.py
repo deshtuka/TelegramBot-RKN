@@ -3,7 +3,7 @@
 """
 import time
 from loguru import logger
-from config.public_keys import settings
+from src.core.config import settings
 
 
 logger.add(settings.file.debug, format='{time} {level} {message}', level='TRACE',

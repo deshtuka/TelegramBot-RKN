@@ -2,30 +2,44 @@
 """
 Файл для работы телеграмм бота
 """
-import handlers
-
-from config.public_keys import settings
-from config.bot_message import Message, Commands
-from utils import folders, db, logger
-import middlewares
+from src import handlers
+from src.core import logger
+from src.db import db
+from src.middlewares import middleware
+from src.core.config import settings
+from src.core.message import Message, Commands
+from src.utils import folders
 from dispatcher import bot
 from telebot.types import BotCommand
 
 
 BotDatabase = db.BotDatabase(settings.file.database)
 
-if __name__ == '__main__':
+
+def start(bot):
+    # Запуск бота
+    try:
+        bot.polling(none_stop=True)
+    finally:
+        bot.stop_polling()
+
+
+def main():
     # SetUp
     folders.create(path_dirs=settings.dir.dict())
     BotDatabase.create_table_db()
 
     # Настройка бота
-    bot.setup_middleware(middlewares.middleware.CustomMiddleware())
+    bot.setup_middleware(middleware.CustomMiddleware())
     bot.msg = Message()
 
     # Список первоначальных команд
     bot.delete_my_commands(scope=None, language_code=None)
     bot.set_my_commands(commands=[BotCommand(str(key), value) for key, value in Commands().dict().items()])
 
-    # Запуск бота
-    bot.polling(none_stop=True)
+    start(bot)
+
+
+if __name__ == '__main__':
+    main()
+

@@ -3,7 +3,7 @@
 Модуль функций проверок для обработчиков
 """
 from bot import bot, BotDatabase
-from config.public_keys import settings
+from src.core.config import settings
 
 import datetime
 

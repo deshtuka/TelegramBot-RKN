@@ -1,8 +1,8 @@
 """ Модуль содержит регистрацию обработчиков """
 from bot import bot
-from . import bot_start as start
-from . import bot_settings as settings
-from . import bot_about as about
+from . import start
+from . import settings
+from . import about
 
 
 # Start

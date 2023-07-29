@@ -21,7 +21,7 @@ services:
 
     # Файл с переменными окружениями
     env_file:
-      - ./config/secret_keys.env
+      - secret_keys.env
 
     volumes:
       # Монтирование локального файла в контейнер с правами Записи/Чтения

@@ -3,8 +3,8 @@
 Функции по шифрованию/дешифрованию сообщений
 """
 
-from config.public_keys import settings
-from utils.logger import logger
+from src.core.config import settings
+from loguru import logger
 
 from cryptography.fernet import Fernet
 from typing import Union

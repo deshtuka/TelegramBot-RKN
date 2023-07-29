@@ -7,7 +7,7 @@ import os
 
 
 # Абсолютный путь до каталога проекта
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 class Url(BaseModel):
@@ -29,18 +29,18 @@ class Xpath(BaseModel):
 
 class Directory(BaseModel):
     """Каталоги проекта"""
-    captcha:        str = f'{BASE_DIR}/captcha_img'
-    archive:        str = f'{BASE_DIR}/report'
+    temp:           str = f'{BASE_DIR}/temp'
+    captcha:        str = f'{temp}/captcha_img'
+    archive:        str = f'{temp}/report'
     archive_temp:   str = f'{archive}/tmp_{{archive_id}}'
     debug:          str = f'{BASE_DIR}/log'
     database:       str = f'{BASE_DIR}/database'
-    config:         str = f'{BASE_DIR}/config'
 
 
 class File(BaseModel):
     """Конфигурационные файлы"""
     debug:      str = f'{Directory().debug}/debug.log'
-    env:        str = f'{Directory().config}/secret_keys.env'
+    env:        str = f'{BASE_DIR}/secret_keys.env'
     database:   str = f'{Directory().database}/database.db'
 
 

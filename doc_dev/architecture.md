@@ -2,10 +2,10 @@
 
 ```
 ├── src
-│   ├── api                 # Методы работы с api
+│   ├── api                 # Методы работы с API
 │   │   ├── requests.py     
 │   │   └── __init__.py
-│   ├── services            # Бизнес логика (steps)
+│   ├── services            # Бизнес логика
 │   │   ├── asserts.py
 │   │   ├── steps.py
 │   │   └── __init__.py
@@ -15,10 +15,10 @@
 │   ├── db                  # Методы для работы с БД
 │   │   ├── db.py   
 │   │   └── __init__.py
-│   ├── core                # Важные методы (доступное всюду)
+│   ├── core                # Это база
 │   │   ├── config.py       # Публичные ключи
 │   │   ├── logger.py       # Логирование
-│   │   ├── message.py      # Тексты сообщений
+│   │   ├── message.py      # Тексты сообщений и команды
 │   │   └── __init__.py
 │   ├── utils               # Универсальные методы
 │   │   ├── crypto.py
@@ -42,6 +42,7 @@
 ├── log                     # Логи 
 ├── venv                    # Виртуальное окружение
 ├── .gitignore
+├── secret_keys.env
 ├── bot.py
 ├── dispatcher.py
 ├── docker-compose.yml

@@ -6,7 +6,7 @@ import os
 
 import requests
 
-from utils.logger import logger
+from loguru import logger
 
 
 def save_image_from_request_body(response: requests.Response, file_name: str) -> bool:

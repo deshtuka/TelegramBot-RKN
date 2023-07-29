@@ -2,18 +2,21 @@
 /shelf/
 /workspace.xml
 /dataSources.local.xml
+
 # Editor-based HTTP Client requests
 /httpRequests/
+
 # Базовые папки
 /.idea
 /.git
-/__pycache__
+/*__pycache__*
 /venv
+
 # Конфигурационные файлы
-/captcha_img
-/config/secret_keys.env
+/secret_keys.env
 /database
 /log
-/report
+/temp
+
 # Тестовые данные
 /*test*

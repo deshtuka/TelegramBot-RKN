@@ -4,8 +4,8 @@
 """
 from typing import Union
 
-from config.public_keys import settings
-from utils import logger
+from src.core.config import settings
+from src.core import logger
 
 from lxml import html
 import re

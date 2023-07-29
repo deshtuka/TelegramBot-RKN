@@ -9,7 +9,7 @@ class Commands(BaseModel):
     start:      str = 'Сформировать и получить отчет'
     settings:   str = 'Настройка учетной записи'
     about:      str = 'Информация о проекте'
-    feedback:   str = 'Оставить отзыв разработчику'
+    # feedback:   str = 'Оставить отзыв разработчику'
 
 
 class Message(BaseModel):

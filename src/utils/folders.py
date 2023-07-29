@@ -5,8 +5,8 @@
 import os
 from typing import Union
 
-from utils import file
-from utils.logger import logger
+from src.utils import file
+from loguru import logger
 
 
 def create(path_dirs: Union[str, dict]):

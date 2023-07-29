@@ -1,4 +1,4 @@
-from config.public_keys import settings
+from src.core.config import settings
 
 import telebot
 
