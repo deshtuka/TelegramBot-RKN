@@ -2,6 +2,7 @@
 """
 Бизнес логика телеграм бота
 """
+from typing import Tuple, Union
 
 from src.api.request import ApiRequests
 from src.services import asserts
@@ -10,8 +11,6 @@ from src.core import logger
 from src.utils.crypto import Cryptography
 from src.core.config import settings
 from bot import BotDatabase, bot
-
-from typing import Tuple, Union
 
 request = ApiRequests()
 

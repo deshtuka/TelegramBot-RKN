@@ -2,13 +2,14 @@
 """
 Файл для работы телеграмм бота
 """
+import datetime
+
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaDocument
+
 from src.core.config import settings
 from src.services import asserts, steps
 from src.utils import folders
 from bot import bot
-
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaDocument
-import datetime
 
 
 def command_start(message):

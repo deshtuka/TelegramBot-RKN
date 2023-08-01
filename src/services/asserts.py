@@ -2,12 +2,12 @@
 """
 Модуль функций проверок для обработчиков
 """
-from bot import bot, BotDatabase
-from src.core.config import settings
-
 import datetime
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+from bot import bot, BotDatabase
+from src.core.config import settings
 
 
 def check_user_exists_in_database(chat_id: id):

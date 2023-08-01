@@ -2,6 +2,8 @@
 """
 Файл для работы телеграмм бота
 """
+from telebot.types import BotCommand
+
 from src import handlers
 from src.core import logger
 from src.db import db
@@ -10,7 +12,6 @@ from src.core.config import settings
 from src.core.message import Message, Commands
 from src.utils import folders
 from dispatcher import bot
-from telebot.types import BotCommand
 
 
 BotDatabase = db.BotDatabase(settings.file.database)

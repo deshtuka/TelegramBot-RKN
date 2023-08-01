@@ -2,11 +2,11 @@
 """
 Файл для работы телеграмм бота
 """
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 from bot import bot, BotDatabase
 from src.services import asserts
 from src.utils.crypto import Cryptography
-
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def command_settings(message):

@@ -2,16 +2,16 @@
 """
 Основные функции для работы скрипта
 """
+import re
+import os
+import csv
 from typing import Union
+
+from lxml import html
+from zipfile import ZipFile
 
 from src.core.config import settings
 from src.core import logger
-
-from lxml import html
-import re
-import os
-from zipfile import ZipFile
-import csv
 
 
 def get_secretcodeid_from_captcha_on_login_page(response):

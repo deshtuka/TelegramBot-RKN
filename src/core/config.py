@@ -2,8 +2,9 @@
 """
 Настройки проекта
 """
-from pydantic import BaseModel, BaseSettings, Field, AnyHttpUrl
 import os
+
+from pydantic import BaseModel, BaseSettings, Field, AnyHttpUrl
 
 
 # Абсолютный путь до каталога проекта
