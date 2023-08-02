@@ -10,7 +10,7 @@ from src.utils import file, folders, functions
 from src.core import logger
 from src.utils.crypto import Cryptography
 from src.core.config import settings
-from bot import BotDatabase, bot
+from bot import bot
 
 request = ApiRequests()
 
@@ -29,7 +29,7 @@ def is_check_cookie(chat_id: int) -> tuple:
     """
     status, level, msg = False, 'WARNING', bot.msg.COOKIES_BAD
 
-    user_agent, secret_code_id, cookies = BotDatabase.get_session(chat_id=chat_id)
+    user_agent, secret_code_id, cookies = bot.db.get_session(chat_id=chat_id)
 
     if asserts.is_cookie_active_less_than_25_min(chat_id=chat_id):
         if user_agent is not None and cookies is not None:
@@ -59,7 +59,7 @@ def get_captcha(chat_id: int) -> ...:
         user_agent = str({'User-Agent': response.request.headers['User-Agent']})
 
         # Сохранение в БД (куков, secretcodeId, user-agent)
-        BotDatabase.edit_session(chat_id, user_agent, secret_code_id, cookies)
+        bot.db.edit_session(chat_id, user_agent, secret_code_id, cookies)
 
         # GET-запрос на сохранение картинки с капчей
         file_name = f'{settings.dir.captcha}/{secret_code_id}.png'
@@ -94,11 +94,11 @@ def bot_get_captcha(bot, chat_id: int):
 def authorization(secret_code_status: int, chat_id: int) -> Tuple[bool, str]:
     """ Авторизация на сайте """
     # Получение данных из БД
-    login, password_encoded = BotDatabase.get_login_password(chat_id=chat_id)
+    login, password_encoded = bot.db.get_login_password(chat_id=chat_id)
     if not login or not password_encoded:
         return False, bot.msg.INFO_SETTING
 
-    user_agent, secret_code_id, cookies = BotDatabase.get_session(chat_id=chat_id)
+    user_agent, secret_code_id, cookies = bot.db.get_session(chat_id=chat_id)
 
     # Запрос авторизации
     response = request.post_authorization(login=login,
@@ -112,7 +112,7 @@ def authorization(secret_code_status: int, chat_id: int) -> Tuple[bool, str]:
     is_auth, msg_auth = functions.scraping_page_auth(response)
 
     if is_auth:
-        BotDatabase.add_last_action(chat_id=chat_id)
+        bot.db.add_last_action(chat_id=chat_id)
 
     return is_auth, msg_auth
 
@@ -123,14 +123,14 @@ def page_report(chat_id: int) -> Union[dict, str]:
     Returns:
          Словарь спарсенных данных отчетов для вывода в кнопки
     """
-    user_agent, _, cookies = BotDatabase.get_session(chat_id=chat_id)
+    user_agent, _, cookies = bot.db.get_session(chat_id=chat_id)
 
     response = request.get_page_report(headers=user_agent, cookies=cookies)
 
     # Парсинг
     result = functions.scraping_page_my_reports(response)
     if isinstance(result, dict) and len(result) > 0:
-        BotDatabase.add_last_action(chat_id=chat_id)
+        bot.db.add_last_action(chat_id=chat_id)
     return result
 
 
@@ -149,7 +149,7 @@ def create_report_for_date(chat_id: int, date: str) -> bool:
     if is_cookie:
         response = request.post_create_report(date=date, headers=user_agent, cookies=cookies)
         if response.status_code == 200:
-            BotDatabase.add_last_action(chat_id=chat_id)
+            bot.db.add_last_action(chat_id=chat_id)
             return True
     return False
 
@@ -184,7 +184,7 @@ def download_selected_report(chat_id: int, archive_id: str):
             path_to_files, message_from_csv = functions.unpacking_archive(archive_id=archive_id,
                                                                           path_archive=path_archive)
 
-            BotDatabase.add_last_action(chat_id=chat_id)
+            bot.db.add_last_action(chat_id=chat_id)
             return True, message_from_csv, path_to_files
         else:
             return False, bot.msg.ERROR_DOWNLOAD, ''

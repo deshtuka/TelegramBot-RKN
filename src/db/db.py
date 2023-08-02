@@ -6,13 +6,36 @@ import sqlite3
 from loguru import logger
 
 
-class BotDatabase:
+class Singleton(type):
+    _instances = {}
 
-    def __init__(self, db_file):
-        """Инициализация соединения с БД"""
-        self.conn = sqlite3.connect(db_file, check_same_thread=False)
-        self.cursor = self.conn.cursor()
-        self.conn.set_trace_callback(logger.info)
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
+
+
+class DatabaseSQLite(metaclass=Singleton):
+    """Класс работы с БД SQLite"""
+
+    def __init__(self):
+        self.conn = None
+        self.cursor = None
+
+        if self.conn is None and self.cursor is None:
+            logger.warning('БД - нужно подключение')
+
+    def connect(self, db_file):
+        """Подключение к БД"""
+        try:
+            self.conn = sqlite3.connect(db_file, check_same_thread=False)
+            self.cursor = self.conn.cursor()
+            self.conn.set_trace_callback(logger.info)
+        except sqlite3.Error as ex:
+            logger.error(f'БД - ошибка подключения: {ex}')
+        else:
+            logger.success('БД - связь установлена')
 
     def create_table_db(self):
         """Создание двух таблиц БД. Первая (config) с конфигурациями, вторая (users) с данными о пользователе"""
@@ -116,4 +139,9 @@ class BotDatabase:
 
     def close(self):
         """Закрыть соединение с БД"""
-        self.conn.close()
+        if self.conn:
+            self.conn.close()
+            logger.success('БД - связь разорвана')
+        else:
+            logger.warning('БД - нет активного подключения')
+

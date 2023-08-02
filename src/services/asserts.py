@@ -6,7 +6,7 @@ import datetime
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from bot import bot, BotDatabase
+from bot import bot
 from src.core.config import settings
 
 
@@ -17,7 +17,7 @@ def check_user_exists_in_database(chat_id: id):
         chat_id: идентификатор чата пользователя с ботом
     """
 
-    if BotDatabase.check_chat_id(chat_id=chat_id) and BotDatabase.check_login_password(chat_id=chat_id):
+    if bot.db.check_chat_id(chat_id=chat_id) and bot.db.check_login_password(chat_id=chat_id):
         keyboard = InlineKeyboardMarkup()
         keyboard.row(
             InlineKeyboardButton(bot.msg.CREATE_REPORT, callback_data='report_crt'),
@@ -38,7 +38,7 @@ def is_cookie_active_less_than_25_min(chat_id: int) -> bool:
     Returns:
         bool: True - менее 25 мин / False - более 25 мин
     """
-    datetime_string = BotDatabase.get_last_action(chat_id=chat_id)
+    datetime_string = bot.db.get_last_action(chat_id=str(chat_id))
 
     if datetime_string is None or not isinstance(datetime_string, str):
         return False
