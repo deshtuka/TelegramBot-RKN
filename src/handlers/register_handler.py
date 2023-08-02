@@ -7,7 +7,7 @@ from . import about
 
 # Start
 bot.register_message_handler(start.command_start, commands=['start'])
-bot.register_message_handler(start.handler_captcha, content_types=['text'], regexp=r'^\d{2,4}$')
+bot.register_message_handler(start.handler_captcha, content_types=['text'], regexp=r'^\d{1,4}$')
 bot.register_callback_query_handler(start.button_create_report,
                                     func=lambda call: call.data and call.data == 'report_crt')
 bot.register_callback_query_handler(start.handler_create_report,
