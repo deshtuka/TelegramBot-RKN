@@ -7,9 +7,9 @@ from pydantic import BaseModel
 class Commands(BaseModel):
     """Класс команд с кратким описанием"""
     start:      str = 'Сформировать и получить отчет'
-    settings:   str = 'Настройка учетной записи'
+    settings:   str = 'Настроить учетную запись'
     about:      str = 'Информация о проекте'
-    # feedback:   str = 'Оставить отзыв разработчику'
+    feedback:   str = 'Написать отзыв разработчику'
 
 
 class Message(BaseModel):
@@ -50,6 +50,10 @@ class Message(BaseModel):
     /settings - настройка учетной записи компании (все данные зашифрованы)
     /feedback - оставить отзыв разработчику о работе бота
     '''
+
+    FEEDBACK:                       str = 'Напишите сообщение:\n\nдля отмены нажмите /cancel'
+    FEEDBACK_GOOD:                  str = 'Спасибо за ваш отзыв!'
+    FEEDBACK_FROM_USER_FOR_ADMIN:   str = 'Поступил отзыв!\n[{}]\n\n{}'
 
     # Предупреждения
     REQUEST_SENT:               str = 'Заявка на {} - Шлепнулась!'

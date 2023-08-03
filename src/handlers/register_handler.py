@@ -3,6 +3,7 @@ from bot import bot
 from . import start
 from . import settings
 from . import about
+from . import feedback
 
 
 # Start
@@ -30,3 +31,6 @@ bot.register_message_handler(settings.handler_password_from_message, regexp=r'(?
 
 # About
 bot.register_message_handler(about.command_about, commands=['about'])
+
+# Feedback
+bot.register_message_handler(feedback.command_feedback, commands=['feedback'])

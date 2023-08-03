@@ -19,6 +19,7 @@ touch /secret_keys.env
 ```dotenv
 TOKEN_BOT="0123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 CIPHER_KEY="0123456789"
+CHAT_ID_ADMIN=0123456789
 ```
 
 ### Создать пустой файл БД в локальной папке
@@ -47,7 +48,14 @@ docker-compose up -d --build
 docker-compose up -d --no-deps --build rkn_bot
 ```
 
-### Остановить конвейер
+### Временная остановка и запуск конвейер
+```bush
+docker-compose stop
+...
+docker-compose start
+```
+
+### Остановить и удалить конвейер
 ```bush
 docker-compose down
 ```

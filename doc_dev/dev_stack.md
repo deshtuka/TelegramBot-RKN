@@ -1,7 +1,7 @@
 
 ### Стек разработки:
 * Python 3.9
-  * pyTelegramBotAPI
+  * pyTelegramBotAPI (sync)
   * Requests
 * SQLite
 

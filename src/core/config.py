@@ -56,6 +56,8 @@ class Env(BaseSettings):
     token: str = Field('Test', env="TOKEN_BOT")
     cipher_key: bytes = Field('Test', env="CIPHER_KEY")
 
+    chat_id_admin: int = Field(0, env="CHAT_ID_ADMIN")
+
     class Config:
         env_file = File().env
         env_file_encoding = 'utf-8'
