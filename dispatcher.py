@@ -1,4 +1,5 @@
 import telebot
+from telebot.storage import StateRedisStorage
 
 from src.core.config import settings
 from src.core.message import Message
@@ -13,4 +14,6 @@ class CustomBot(telebot.TeleBot):
         self.db = DatabaseSQLite()
 
 
-bot = CustomBot(token=settings.env.token, use_class_middlewares=True)
+bot = CustomBot(token=settings.env.token,
+                use_class_middlewares=True,
+                state_storage=StateRedisStorage(host=settings.env.redis_host, port=settings.env.redis_port))

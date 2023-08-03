@@ -58,6 +58,9 @@ class Env(BaseSettings):
 
     chat_id_admin: int = Field(0, env="CHAT_ID_ADMIN")
 
+    redis_host: str = Field('redis', env="REDIS_HOST")
+    redis_port: int = Field(6379, env="REDIS_PORT")
+
     class Config:
         env_file = File().env
         env_file_encoding = 'utf-8'

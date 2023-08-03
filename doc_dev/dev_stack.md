@@ -4,4 +4,4 @@
   * pyTelegramBotAPI (sync)
   * Requests
 * SQLite
-
+* Redis

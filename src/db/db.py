@@ -6,17 +6,7 @@ import sqlite3
 from loguru import logger
 
 
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
-
-
-class DatabaseSQLite(metaclass=Singleton):
+class DatabaseSQLite:
     """Класс работы с БД SQLite"""
 
     def __init__(self):
@@ -74,14 +64,9 @@ class DatabaseSQLite(metaclass=Singleton):
         return all(result.fetchall()[0])
 
     # Настройки
-    def edit_login(self, chat_id: str, login):
-        """Изменить логин учетной записи"""
-        self.cursor.execute("UPDATE config SET login=? WHERE chat_id=?;", (login, chat_id))
-        return self.conn.commit()
-
-    def edit_password(self, chat_id: str, password):
-        """Изменить пароль учетной записи"""
-        self.cursor.execute("UPDATE config SET password=? WHERE chat_id=?;", (password, chat_id))
+    def edit_login_and_password(self, chat_id: str, login, password):
+        """Изменить логин и пароль учетной записи"""
+        self.cursor.execute("UPDATE config SET login=?, password=? WHERE chat_id=?;", (login, password, chat_id))
         return self.conn.commit()
 
     def delete_account(self, chat_id: str):
@@ -144,4 +129,3 @@ class DatabaseSQLite(metaclass=Singleton):
             logger.success('БД - связь разорвана')
         else:
             logger.warning('БД - нет активного подключения')
-

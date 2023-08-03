@@ -20,6 +20,8 @@ touch /secret_keys.env
 TOKEN_BOT="0123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 CIPHER_KEY="0123456789"
 CHAT_ID_ADMIN=0123456789
+REDIS_HOST="redis"
+REDIS_PORT=6379
 ```
 
 ### Создать пустой файл БД в локальной папке

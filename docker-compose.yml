@@ -28,5 +28,21 @@ services:
       - /usr/src/app/database:/usr/src/app/rkn_bot/database
       - /usr/src/app/database/database.db:/usr/src/app/rkn_bot/database/database.db:rw
 
+    networks:
+      - deploy_network
+
+    # Запуск приложения после запуска контейнера redis
+    depends_on:
+      - redis
+
     # Команда запуска после создания образа
     command: python ./bot.py
+
+  redis:
+    image: redis:latest
+    restart: always
+    networks:
+      - deploy_network
+
+networks:
+  deploy_network:

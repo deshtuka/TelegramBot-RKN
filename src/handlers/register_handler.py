@@ -20,14 +20,6 @@ bot.register_callback_query_handler(start.handler_download_report,
 
 # Settings
 bot.register_message_handler(settings.command_settings, commands=['settings'])
-bot.register_callback_query_handler(settings.button_setup_account,
-                                    func=lambda call: call.data and call.data == 'settings_edit')
-bot.register_callback_query_handler(settings.handler_del_account,
-                                    func=lambda call: call.data and call.data == 'settings_delete')
-bot.register_callback_query_handler(settings.handler_cancel_settings,
-                                    func=lambda call: call.data and call.data == 'settings_cancel')
-bot.register_message_handler(settings.handler_login_from_message, regexp=r'(?i)^(login=)')
-bot.register_message_handler(settings.handler_password_from_message, regexp=r'(?i)^(password=)')
 
 # About
 bot.register_message_handler(about.command_about, commands=['about'])

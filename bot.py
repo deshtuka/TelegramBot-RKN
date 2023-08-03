@@ -3,6 +3,7 @@
 Файл для работы телеграмм бота
 """
 from telebot.types import BotCommand
+from telebot import custom_filters
 
 from src import handlers
 from src.core import logger
@@ -32,6 +33,8 @@ def main():
 
     # Настройка бота
     bot.setup_middleware(CustomMiddleware())
+    bot.add_custom_filter(custom_filters.StateFilter(bot))
+
     bot.delete_my_commands(scope=None, language_code=None)
     bot.set_my_commands(commands=[BotCommand(str(key), value) for key, value in Commands().dict().items()])
 

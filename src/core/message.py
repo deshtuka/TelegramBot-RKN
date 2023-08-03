@@ -33,9 +33,10 @@ class Message(BaseModel):
     REPORT_STATUS:  str = 'Статус отчетов:'
     INFO_ACCOUNT:   str = 'Что нужно сделать с учетной записью?'
     INFO_LOGIN:     str = 'Для доступа к сервису РосКомНадзора необходимо ввести Ваши данные от учетной записи\n\n' \
-                          'Введите логин с командой login:\nПример: login=admin'
-    INFO_PASSWORD:  str = 'Отлично, теперь осталось ввести пароль с командой password\n\nПример: password=123'
+                          'Введите логин от учетной записи:'
+    INFO_PASSWORD:  str = 'Отлично, теперь осталось ввести пароль:'
     INFO_SETTING:   str = 'Необходимо настроить аккаунт!\nДля этого введите команду:\n/settings'
+    INFO_CANCEL:    str = 'Ладно, как-нибудь в другой раз'
 
     COOKIES_GOOD:   str = 'Проверка активности куков: куки рабочие!'
     COOKIES_BAD:    str = 'Проверка активности куков: куки не рабочие!'
@@ -51,7 +52,7 @@ class Message(BaseModel):
     /feedback - оставить отзыв разработчику о работе бота
     '''
 
-    FEEDBACK:                       str = 'Напишите сообщение:\n\nдля отмены нажмите /cancel'
+    FEEDBACK:                       str = 'Напишите сообщение:'
     FEEDBACK_GOOD:                  str = 'Спасибо за ваш отзыв!'
     FEEDBACK_FROM_USER_FOR_ADMIN:   str = 'Поступил отзыв!\n[{}]\n\n{}'
 
