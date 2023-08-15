@@ -3,7 +3,8 @@
 ```
 ├── src
 │   ├── api                 # Методы работы с API
-│   │   ├── requests.py     
+│   │   ├── requests.py
+│   │   ├── analytics.py
 │   │   └── __init__.py
 │   ├── services            # Бизнес логика
 │   │   ├── asserts.py
@@ -38,6 +39,7 @@
 ├── temp                    # Временные файлы
 │   ├── captcha
 │   └── report
+├── metrics                 # Настройки VM и Grafana
 ├── doc_dev                 # Документация
 ├── log                     # Логи 
 ├── venv                    # Виртуальное окружение

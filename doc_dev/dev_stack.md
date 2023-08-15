@@ -5,3 +5,5 @@
   * Requests
 * SQLite
 * Redis
+* VictoriaMetrics (Single-node + line protocol InfluxDB)
+* Grafana

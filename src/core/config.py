@@ -61,6 +61,9 @@ class Env(BaseSettings):
     redis_host: str = Field('redis', env="REDIS_HOST")
     redis_port: int = Field(6379, env="REDIS_PORT")
 
+    vm_host: str = Field('host.docker.internal', env="VICTORIAMETRICS_HOST")
+    vm_port: int = Field(8428, env="VICTORIAMETRICS_PORT")
+
     class Config:
         env_file = File().env
         env_file_encoding = 'utf-8'

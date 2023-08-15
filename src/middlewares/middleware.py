@@ -4,6 +4,7 @@ from telebot.handler_backends import BaseMiddleware
 from telebot import types
 
 from src.core.logger import log_active_user
+from src.api.analytics import analytics
 
 
 class CustomMiddleware(BaseMiddleware):
@@ -17,20 +18,22 @@ class CustomMiddleware(BaseMiddleware):
         return f'[ID:{query.from_user.id}][NAME: {query.from_user.full_name}]'
 
     # Отправка сообщения
-    def pre_process_message(self, message, data):
+    def pre_process_message(self, message: types.Message, data):
         """ Перед обработкой сообщения"""
+        if not str(message.text).isdigit():
+            analytics.write_bot(message=message)
         log_active_user(f'{self.user_msg(message)} отправлено сообщение: "{message.text}"')
 
-    def post_process_message(self, message, data, exception):
+    def post_process_message(self, message: types.Message, data, exception):
         """ После обработки сообщения"""
         log_active_user(f'{self.user_msg(message)} сообщение: "{message.text}" - обработано')
 
     # Изменение сообщения
-    def pre_process_edited_message(self, message, data):
+    def pre_process_edited_message(self, message: types.Message, data):
         """ Перед обработкой изменения сообщения"""
         log_active_user(f'{self.user_msg(message)} изменено сообщение: "{message.text}"')
 
-    def post_process_edited_message(self, message, data, exception):
+    def post_process_edited_message(self, message: types.Message, data, exception):
         """ После обработки изменения сообщения"""
         log_active_user(f'{self.user_msg(message)} изменение сообщения: "{message.text}" - завершено')
 

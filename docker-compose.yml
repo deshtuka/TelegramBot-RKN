@@ -25,24 +25,63 @@ services:
 
     volumes:
       # Монтирование локального файла в контейнер с правами Записи/Чтения
-      - /usr/src/app/database:/usr/src/app/rkn_bot/database
-      - /usr/src/app/database/database.db:/usr/src/app/rkn_bot/database/database.db:rw
+      - ./database/:/usr/src/app/rkn_bot/database
+      - ./database/database.db:/usr/src/app/rkn_bot/database/database.db:rw
 
     networks:
       - deploy_network
 
-    # Запуск приложения после запуска контейнера redis
+    # Возможность приложения обращаться к localhost:port (В коде использовать: host.docker.internal:8080)
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+    # Запуск приложения после запуска контейнеров
     depends_on:
       - redis
+      - victoriametrics
 
     # Команда запуска после создания образа
     command: python ./bot.py
 
   redis:
     image: redis:latest
+    container_name: redis
     restart: always
     networks:
       - deploy_network
 
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics:latest
+    ports:
+      - 8428:8428
+    volumes:
+      - vmdata:/storage
+    command:
+      - "--storageDataPath=/storage"
+      - "--httpListenAddr=:8428"
+    networks:
+      - deploy_network
+    restart: always
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    depends_on:
+      - victoriametrics
+    ports:
+      - 3000:3000
+    volumes:
+      - grafanadata:/var/lib/grafana
+#      - ./metrics/provisioning/:/etc/grafana/provisioning/
+#      - ./metrics/dashboards/victoriametrics.json:/var/lib/grafana/dashboards/vm.json
+    networks:
+      - deploy_network
+    restart: always
+
 networks:
   deploy_network:
+
+volumes:
+  vmdata: {}
+  grafanadata: {}

@@ -10,3 +10,4 @@ urllib3~=1.26.16
 pydantic~=1.10.12
 python-dotenv~=1.0.0
 redis~=4.6.0
+influxdb~=5.3.1
