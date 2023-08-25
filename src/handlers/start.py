@@ -25,8 +25,8 @@ def handler_captcha(message):
     if is_auth:
         keyboard = InlineKeyboardMarkup()
         keyboard.row(
-            InlineKeyboardButton(bot.msg.CREATE_REPORT, callback_data='report_crt'),
-            InlineKeyboardButton(bot.msg.GET_REPORT, callback_data='report_get')
+            InlineKeyboardButton(bot.msg.CREATE_REPORT, callback_data='btn_crt'),
+            InlineKeyboardButton(bot.msg.GET_REPORT, callback_data='btn_get')
         )
         bot.send_message(chat_id, bot.msg.SUCCESS_AUTH, reply_markup=keyboard)
     else:
@@ -47,7 +47,7 @@ def button_create_report(callback_query):
 
         # Добавление кнопок, вывод на экран
         inline_date = InlineKeyboardMarkup(row_width=3)
-        inline_date.add(*[InlineKeyboardButton(val, callback_data=f'date_{val}') for val in date_dict.values()])
+        inline_date.add(*[InlineKeyboardButton(val, callback_data=f'btn_crt_on_{val}') for val in date_dict.values()])
 
         bot.send_message(chat_id, bot.msg.SELECT_DATE, reply_markup=inline_date)
     else:
@@ -56,7 +56,7 @@ def button_create_report(callback_query):
 
 def handler_create_report(callback_query):
     """ Обработчик создания заявки. Пользователь выбрал кнопку с датой (Пример: 12.02.2021) """
-    date = callback_query.data[5:]  # Дата формата dd.mm.YYYY
+    date = str(callback_query.data).split('btn_crt_on_')[-1]  # Дата формата dd.mm.YYYY
     chat_id = callback_query.message.chat.id
 
     # POST-запрос создания заявки
@@ -84,7 +84,7 @@ def button_get_report(callback_query):
             inline_response = InlineKeyboardMarkup(row_width=1)
             list_buttons = list()
             for key, value in response_result.items():
-                list_buttons.append(InlineKeyboardButton(value, callback_data=f'rsp_{key}'))
+                list_buttons.append(InlineKeyboardButton(value, callback_data=f'btn_get_on_{key}'))
             inline_response.add(*list_buttons)
 
             bot.send_message(chat_id=chat_id, text=bot.msg.REPORT_STATUS, reply_markup=inline_response)
@@ -97,7 +97,7 @@ def handler_download_report(callback_query):
     """ Обработчик скачивания выбранного отчета """
     chat_id = callback_query.message.chat.id
     link_id = callback_query.data.split('_')[-1]    # ID отчета для подстановки в ссылку
-    date_rep = callback_query.data.split('_')[2]    # Дата получаемого отчета
+    date_rep = callback_query.data.split('_')[4]    # Дата получаемого отчета
 
     is_response, bot_msg, path_to_files = steps.download_selected_report(chat_id=chat_id, archive_id=link_id)
 

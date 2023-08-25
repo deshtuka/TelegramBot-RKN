@@ -20,8 +20,8 @@ def check_user_exists_in_database(chat_id: id):
     if bot.db.check_chat_id(chat_id=chat_id) and bot.db.check_login_password(chat_id=chat_id):
         keyboard = InlineKeyboardMarkup()
         keyboard.row(
-            InlineKeyboardButton(bot.msg.CREATE_REPORT, callback_data='report_crt'),
-            InlineKeyboardButton(bot.msg.GET_REPORT, callback_data='report_get')
+            InlineKeyboardButton(bot.msg.CREATE_REPORT, callback_data='btn_crt'),
+            InlineKeyboardButton(bot.msg.GET_REPORT, callback_data='btn_get')
         )
 
         bot.send_message(chat_id=chat_id, text=bot.msg.SELECT_ACTION, reply_markup=keyboard)
